@@ -28,10 +28,11 @@ except:
 # User directory strings
 read = user_dir.read()
 # For reading no. of directories
-length = read.split("\n")
+length = read.split()
+templist = read.split("\n")
 # The following three lines is just for formatting
 temp = ""
-for x in length:
+for x in templist:
 	temp += "\t\t\t" + x + "\n"
 
 print(f"""
@@ -131,7 +132,7 @@ def mover():
 					  | |_____
 					 /    (]__)
 					/    (]___)
-				       /    (]___)
+				 /    (]___)
 					  ___(]_)
 					 /
 					/
