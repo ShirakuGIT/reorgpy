@@ -6,11 +6,11 @@ import os
 import shutil
 
 # List of file extensions to check
-documents = [".pdf", ".txt", ".odt", ".xlsx", ".xcf", ".py", ".cs", ".sh", ".kdenlive", ".xml", ".odp"]
+documents = [".pdf", ".txt", ".odt", ".xlsx", ".xcf", ".py", ".cs", ".sh", ".kdenlive", ".xml", ".odp", ".PDF"]
 music = [".mp3", ".wav", ".aac", ".ogg", ".alac"]
-video = [".mp4", ".mov", ".avi", ".webm", ".wmv"]
+video = [".mp4", ".mov", ".avi", ".webm", ".wmv", ".mkv", ".srt"]
 downloads = [".deb", ".dmg", ".exe", ".app", ".zip", ".bz2", ".torrent"]
-pics = [".jpg", ".jpeg", ".png", ".gif", ".tiff", ".raw", ".svg", ".bmp"]
+pics = [".jpg", ".jpeg", ".png", ".gif", ".tiff", ".raw", ".svg", ".bmp", ".webp"]
 
 # Introductory code to ask for rewriting text file
 print("""
@@ -52,17 +52,30 @@ print("""
 # Checks if user wants to rewrite his directories
 rewrite = input("\t\t\tType here: ")
 
+
+def dir_check(dir_name):
+	while True:
+		dir_path = input(f"\t\t\tEnter path to {dir_name} folder\t\t\t")
+
+		if os.path.exists(dir_path):
+			break
+		else:
+			print("\n\t\t\tTry again, path doesn't exist\n")
+
+	return dir_path
+
+
 # List of user directories for the check
 if read == "" or rewrite == "yes":
 	user_dir = open('user_directories.txt', "w+")
 	print("")
 
-	user_doc = input("Enter path to documents folder       ")
-	user_mus = input("Enter path to music folder           ")
-	user_dow = input("Enter path to downloads folder       ")
-	user_pic = input("Enter path to pictures folder        ")
-	user_vid = input("Enter path to videos folder          ")
-	user_hom = input("Enter path to home directory         ")
+	user_doc = dir_check("Documents")
+	user_mus = dir_check("Music")
+	user_dow = dir_check("Downloads")
+	user_pic = dir_check("Pictures")
+	user_vid = dir_check("Videos")
+	user_hom = dir_check("Home")
 
 	dir_list = [user_doc, user_mus, user_dow, user_pic, user_vid, user_hom]
 	# Writes the directories to text file
@@ -79,6 +92,7 @@ elif rewrite == "no":
 	user_pic = read[3]
 	user_vid = read[4]
 	user_hom = read[5]
+	dir_list = [user_doc, user_mus, user_dow, user_pic, user_vid, user_hom]
 
 else:
 	print("Error, try running the program again")
@@ -95,32 +109,43 @@ filelen = len(all_dir)
 user_dir.close()
 
 def mover():
+	skipped = 0
+	moved = 0
+	supported_extensions = documents + music + video + downloads + pics
 
 	for i in all_dir:
+		if pathlib.Path(i).suffix not in supported_extensions:
+			skipped += 1
 
-		
-		if pathlib.Path(i).suffix in documents:
+		elif pathlib.Path(i).suffix in documents and os.path.dirname(i) not in user_doc:
+			print(os.path.dirname(i), user_doc)
+			moved += 1
 			shutil.move(i, user_doc + os.path.basename(i))
 
 
-		elif pathlib.Path(i).suffix in music:
+		elif pathlib.Path(i).suffix in music and os.path.dirname(i) not in user_mus:
+			moved += 1
 			shutil.move(i, user_mus + os.path.basename(i))
 			
 
-		elif pathlib.Path(i).suffix in video:
+		elif pathlib.Path(i).suffix in video and os.path.dirname(i) not in user_vid:
+			moved += 1
 			shutil.move(i, user_vid + os.path.basename(i))
 
 
-		elif pathlib.Path(i).suffix in downloads:
+		elif pathlib.Path(i).suffix in downloads and os.path.dirname(i) not in user_dow:
+			moved += 1
 			shutil.move(i, user_dow + os.path.basename(i))
 
 
-		elif pathlib.Path(i).suffix in pics:
+		elif pathlib.Path(i).suffix in pics and os.path.dirname(i) not in user_pic:
+			moved += 1
 			shutil.move(i, user_pic + os.path.basename(i))
 
-		
 		else:
 			pass
+
+	processed = filelen - skipped
 
 	#Success statement
 	print(fr"""
@@ -132,12 +157,12 @@ def mover():
 					  | |_____
 					 /    (]__)
 					/    (]___)
-				 /    (]___)
+				   /    (]___)
 					  ___(]_)
 					 /
 					/
 
-			   Successfully moved {filelen} files  
+			   Successfully read {filelen} files, processed {processed} and moved {moved} files
 			-----------------------------------------------------------
 	 
 	""")		
@@ -169,5 +194,4 @@ elif user_in == 1:
 
 
 # Code by Shivaram Kumar
-
 
